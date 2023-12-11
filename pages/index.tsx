@@ -1,12 +1,25 @@
 import Head from 'next/head'
 import { Inter } from 'next/font/google'
+import { useState, useEffect } from 'react';
 
 import fs from 'fs';
 import path from 'path';
 
-const inter = Inter({ subsets: ['latin'] })
+const inter = Inter({ subsets: ['latin'] });
 
 export default function Home({ data }: { data: { name: string }[] }) {
+  const [imageUrl, setImageUrl] = useState<string>('');
+
+  useEffect(() => {
+    fetch('/api/bingImage')
+      .then(response => response.json())
+      .then(data => {
+        const imageUrl = data.images[0].url;
+        setImageUrl(`http://www.bing.com${imageUrl}`);
+      })
+      .catch(error => console.error(error));
+  }, []);
+
   return (
     <>
       <Head>
@@ -15,6 +28,8 @@ export default function Home({ data }: { data: { name: string }[] }) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
       <main className={`${inter.className}`}>
+        {imageUrl && <img src={imageUrl} alt="Bing daily image" />}
+
         {data.map((item, index) => (
           <div key={index}>{item.name}</div>
         ))}
