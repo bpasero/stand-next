@@ -9,16 +9,45 @@ const inter = Inter({ subsets: ['latin'] });
 
 export default function Home({ data }: { data: { name: string }[] }) {
   const [imageUrl, setImageUrl] = useState<string>('');
+  const [speakerIndex, setSpeakerIndex] = useState<number>(-1);
 
   useEffect(() => {
-    fetch('/api/image')
-      .then(response => response.json())
-      .then(data => {
-        const imageUrl = data.images[0].url;
-        setImageUrl(`http://www.bing.com${imageUrl}`);
-      })
-      .catch(error => console.error(error));
+
+    // Image
+    (async () => {
+      const response = await fetch('/api/image');
+      const data = await response.json();
+      const imageUrl = data.images[0].url;
+      setImageUrl(`http://www.bing.com${imageUrl}`);
+    })();
+
+    // State
+    setInterval(async () => {
+      const response = await fetch('/api/state');
+      const data = await response.json();
+      setSpeakerIndex(data.speakerIndex);
+    }, 500);
   }, []);
+
+  const handleNext = async () => {
+    await fetch('/api/state', {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ speakerIndex: speakerIndex + 1 }),
+    });
+  };
+
+  const handlePrevious = async () => {
+    await fetch('/api/state', {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ speakerIndex: speakerIndex - 1 }),
+    });
+  };
 
   return (
     <>
@@ -28,11 +57,15 @@ export default function Home({ data }: { data: { name: string }[] }) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
       <main className={`${inter.className}`}>
-        {imageUrl && <img src={imageUrl} alt="Bing daily image" />}
-
         {data.map((item, index) => (
-          <div key={index}>{item.name}</div>
+          <div key={index}>{item.name}, selected: {index === speakerIndex ? 'true' : 'false'}</div>
         ))}
+        <button onClick={handlePrevious}>Previous</button>
+        <button onClick={handleNext}>Next</button>
+
+        
+
+        {imageUrl && <img src={imageUrl} alt="Bing daily image" />}
       </main>
     </>
   )
