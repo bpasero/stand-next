@@ -11,7 +11,7 @@ export default function Home({ data }: { data: { name: string }[] }) {
   const [imageUrl, setImageUrl] = useState<string>('');
 
   useEffect(() => {
-    fetch('/api/bingImage')
+    fetch('/api/image')
       .then(response => response.json())
       .then(data => {
         const imageUrl = data.images[0].url;
