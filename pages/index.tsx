@@ -10,6 +10,7 @@ const inter = Inter({ subsets: ['latin'] });
 export default function Home({ data }: { data: { name: string }[] }) {
   const [imageUrl, setImageUrl] = useState<string>('');
   const [speakerIndex, setSpeakerIndex] = useState<number>(-1);
+  const [startTimes, setStartTimes] = useState<number[]>([]);
 
   useEffect(() => {
 
@@ -26,6 +27,7 @@ export default function Home({ data }: { data: { name: string }[] }) {
       const response = await fetch('/api/state');
       const data = await response.json();
       setSpeakerIndex(data.speakerIndex);
+      setStartTimes(data.startTimes);
     }, 500);
   }, []);
 
@@ -101,23 +103,45 @@ export default function Home({ data }: { data: { name: string }[] }) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
       <main className={`${inter.className}`} style={{ backgroundImage: `url(${imageUrl})`, backgroundSize: 'cover', backgroundPositionX: '50%' }}>
-        <div style={{paddingTop: '10px', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+        <div style={{ paddingTop: '10px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
           <button style={{ padding: '10px 20px', fontSize: '20px' }} onClick={handleStart}>Start</button>
           <button style={{ padding: '10px 20px', fontSize: '20px' }} onClick={handlePrevious}>Previous</button>
           <button style={{ padding: '10px 20px', fontSize: '20px' }} onClick={handleNext}>Next</button>
           <button style={{ padding: '10px 20px', fontSize: '20px' }} onClick={handleStop}>Stop</button>
         </div>
-        <div style={{ backgroundColor: 'rgb(40,40,40)', width: '50%', margin: 'auto' }}>
+        <div style={{ backgroundColor: 'rgb(40,40,40,0.7)', width: '50%', margin: 'auto' }}>
           {data.map((item, index) => (
-            <div key={index} style={{
-              display: 'flex',
-              flexDirection: 'row',
-              margin: '10px',
-              padding: '10px',
-              fontSize: '20px',
-              backgroundColor: index === speakerIndex ? 'lightgreen' : 'transparent' // Change the background color here
-            }}>
-              {item.name}
+            <div key={index} style={{ backgroundColor: index === speakerIndex ? 'green' : 'transparent'}}> 
+              <div style={{
+                display: 'flex',
+                flexDirection: 'row',
+                margin: '10px',
+                padding: '10px',
+                fontSize: '20px'
+              }}>
+                <div style={{ display: 'flex', width: '100%' }}>
+                  <div>{item.name}</div>
+                  <div style={{marginLeft: 'auto'}}>
+                    {
+                      (() => {
+                        if (!startTimes[index]) {
+                          return '';
+                        }
+
+                        const now = new Date();
+                        const startTime = new Date(startTimes[index]);
+                        const diff = now.getTime() - startTime.getTime();
+
+                        const hours = Math.floor(diff / (1000 * 60 * 60));
+                        const minutes = Math.floor((diff / (1000 * 60)) % 60);
+                        const seconds = Math.floor((diff / 1000) % 60);
+
+                        return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                      })()
+                    }
+                  </div>
+                </div>
+              </div>
             </div>
           ))}
         </div>
