@@ -49,6 +49,26 @@ export default function Home({ data }: { data: { name: string }[] }) {
     });
   };
 
+  const handleStart = async () => {
+    await fetch('/api/state', {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ speakerIndex: speakerIndex - 1 }),
+    });
+  };
+
+  const handleStop = async () => {
+    await fetch('/api/state', {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ speakerIndex: speakerIndex - 1 }),
+    });
+  };
+
   return (
     <>
       <Head>
@@ -57,8 +77,12 @@ export default function Home({ data }: { data: { name: string }[] }) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
       <main className={`${inter.className}`} style={{ backgroundImage: `url(${imageUrl})`, backgroundSize: 'cover' }}>
-        <button onClick={handlePrevious}>Previous</button>
-        <button onClick={handleNext}>Next</button>
+        <div style={{paddingTop: '10px', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+          <button style={{ padding: '10px 20px', fontSize: '20px' }} onClick={handleStart}>Start</button>
+          <button style={{ padding: '10px 20px', fontSize: '20px' }} onClick={handlePrevious}>Previous</button>
+          <button style={{ padding: '10px 20px', fontSize: '20px' }} onClick={handleNext}>Next</button>
+          <button style={{ padding: '10px 20px', fontSize: '20px' }} onClick={handleStop}>Stop</button>
+        </div>
         <div style={{ backgroundColor: 'rgb(40,40,40)', width: '50%', margin: 'auto' }}>
           {data.map((item, index) => (
             <div key={index} style={{
