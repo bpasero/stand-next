@@ -2,7 +2,8 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import https from 'https';
 
 let state = {
-    speakerIndex: -1
+    speakerIndex: -1,
+    running: false
 }
 
 export default function handler(req: NextApiRequest, res: NextApiResponse) {

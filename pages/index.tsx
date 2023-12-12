@@ -30,54 +30,66 @@ export default function Home({ data }: { data: { name: string }[] }) {
   }, []);
 
   const handleNext = async () => {
-    const newSpeakerIndex = speakerIndex + 1;
-    setSpeakerIndex(newSpeakerIndex);
+    const newState = {
+      speakerIndex: Math.min(speakerIndex + 1, data.length - 1),
+      running: true
+    }
+    setSpeakerIndex(newState.speakerIndex);
 
     await fetch('/api/state', {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ speakerIndex: newSpeakerIndex }),
+      body: JSON.stringify(newState),
     });
   };
 
   const handlePrevious = async () => {
-    const newSpeakerIndex = speakerIndex - 1;
-    setSpeakerIndex(newSpeakerIndex);
+    const newState = {
+      speakerIndex: Math.max(speakerIndex - 1, 0),
+      running: true
+    }
+    setSpeakerIndex(newState.speakerIndex);
 
     await fetch('/api/state', {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ speakerIndex: newSpeakerIndex }),
+      body: JSON.stringify(newState),
     });
   };
 
   const handleStart = async () => {
-    const newSpeakerIndex = 0;
-    setSpeakerIndex(newSpeakerIndex);
+    const newState = {
+      speakerIndex: 0,
+      running: true
+    }
+    setSpeakerIndex(newState.speakerIndex);
 
     await fetch('/api/state', {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ speakerIndex: newSpeakerIndex }),
+      body: JSON.stringify(newState),
     });
   };
 
   const handleStop = async () => {
-    const newSpeakerIndex = -1;
-    setSpeakerIndex(newSpeakerIndex);
+    const newState = {
+      speakerIndex: -1,
+      running: false
+    }
+    setSpeakerIndex(newState.speakerIndex);
 
     await fetch('/api/state', {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ speakerIndex: newSpeakerIndex }),
+      body: JSON.stringify(newState),
     });
   };
 
